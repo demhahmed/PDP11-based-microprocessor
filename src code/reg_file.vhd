@@ -6,8 +6,8 @@ entity reg_file is
     generic (n: integer :=16);
     port (
         clk, mem_clk, src_en, dst_en, mdr_en, write_en : in std_logic;
-        src_sel, dst_sel : in std_logic_vector(2 downto 0);
-	rst : in std_logic_vector(9 downto 0);
+        src_sel, dst_sel : in std_logic_vector(3 downto 0);
+		rst : in std_logic_vector(9 downto 0);
         busb : in std_logic_vector(n-1 downto 0);
         busa : out std_logic_vector(n-1 downto 0)
     );
