@@ -1,7 +1,7 @@
 LIBRARY IEEE;
 USE IEEE.std_Logic_1164.all;
 
-entity tristate is
+entity nbitTristate is
 generic(n: integer:= 16);
 port(
 	input: in std_logic_vector(n-1 downto 0);
@@ -9,9 +9,9 @@ port(
 	en: in std_logic
 ); 
 
-end entity tristate;
+end entity nbitTristate;
 
-architecture a of tristate is
+architecture a of nbitTristate is
 begin
 	output <= input when en='1'
 	else (others=>'Z');

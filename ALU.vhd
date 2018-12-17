@@ -2,13 +2,13 @@ LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 
 ENTITY ALU IS
-GENERIC (reg_size: integer:=16);
-  PORT(
-    A,B : IN std_logic_vector(reg_size-1 DOWNTO 0);
-    Cin : IN std_logic;
-    Sel : IN std_logic_vector(3 DOWNTO 0);
-    Cout : OUT std_logic;
-    F : OUT std_logic_vector(reg_size-1 DOWNTO 0));
+	GENERIC (reg_size: integer:=16);
+	PORT(
+		A,B : IN std_logic_vector(reg_size-1 DOWNTO 0);
+		Cin : IN std_logic;
+		Sel : IN std_logic_vector(3 DOWNTO 0);
+		Cout : OUT std_logic;
+		F : OUT std_logic_vector(reg_size-1 DOWNTO 0));
 END ENTITY ALU;
 
 ARCHITECTURE structural_behavioural OF ALU IS

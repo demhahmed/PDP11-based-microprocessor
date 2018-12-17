@@ -12,8 +12,14 @@ end entity nbitRegister;
 
 architecture a of nbitRegister is
 begin
-	output <= (others=>'0') when rst='1'
-	else input when en='1' and rising_edge(clk);
+	-- output <= (others=>'0') when rst='1'
+	-- else input when en='1' and rising_edge(clk);
+	PROCESS(clk, rst)
+		BEGIN
+			IF(rst = '1')  THEN output <= (OTHERS => '0');
+			ELSIF (en = '1' AND rising_edge(clk))  THEN output <= input;
+			END IF;
+	END PROCESS;
 
 end architecture;
 
