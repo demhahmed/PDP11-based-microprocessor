@@ -14,4 +14,4 @@ ARCHITECTURE arch OF adder IS
 				F <= A XOR B XOR Cin;
 				Cout <= (A AND B) OR (Cin AND (A XOR B));
 		END PROCESS;
-END adder;
+END ARCHITECTURE;

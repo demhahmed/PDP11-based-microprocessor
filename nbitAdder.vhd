@@ -20,4 +20,4 @@ ARCHITECTURE arch OF nbitAdder IS
 	  END GENERATE;
 	  Cout <= temp(n);
 	  	  
-END ARCHITECTURE nbitAdder;
+END ARCHITECTURE;
