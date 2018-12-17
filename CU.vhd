@@ -73,11 +73,9 @@ BEGIN
 	add_tri:  FOR i IN  0 TO  4 GENERATE
 	-- tri_state_buffer of each special register
 	tri_st_buffer : entity work.nbitTristate GENERIC MAP(n => reg_size) 
-					PORT MAP (en=>src(i), input=>reg_to_tristate((i+1)*reg_size -1 DOWNTO i*reg_size), output=>bus_A);
+					PORT MAP (en=>src(i+8), input=>reg_to_tristate((i+1)*reg_size -1 DOWNTO i*reg_size), output=>bus_A);
 	END GENERATE;
 
-	-- Ram 
-	
 	
 									
 END ARCHITECTURE arch;
