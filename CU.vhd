@@ -22,11 +22,20 @@ SIGNAL y_clear			:	std_logic;
 SIGNAL alu_Cin			:	std_logic;
 SIGNAL alu_Cout			:	std_logic;
 SIGNAL alu_operation	:	std_logic_vector(3 downto 0);
-SIGNAL dst				:	std_logic_vector(10 downto 0);
-SIGNAL src				:	std_logic_vector(10 downto 0);
-SIGNAL rst				:	std_logic_vector(3 downto 0);		-- rst(0) indicates general purpose registers reset
+SIGNAL dst				:	std_logic_vector(13 downto 0);
+SIGNAL src				:	std_logic_vector(13 downto 0);
+SIGNAL rst				:	std_logic_vector(6 downto 0);		-- rst(0) indicates general purpose registers reset
 signal en_gen_reg_dst	:	std_logic;
 signal en_gen_reg_src	:	std_logic;
+
+
+signal reg_to_tristate	: 	std_logic_vector(reg_size*5-1 downto 0);
+signal mem_address		:	std_logic_vector(15 downto 0);
+signal mem_data_out		:	std_logic_vector(15 downto 0);
+signal rom_address		:	std_logic_vector(15 downto 0);
+signal mux_to_mdr		:	std_logic_vector(15 downto 0);
+
+signal mem_read			:	std_logic_vector(0 downto 0);
 
 
 BEGIN
@@ -42,7 +51,33 @@ BEGIN
 																port map(clk => clk, rst => rst(0) or rst_all, en_dst => en_gen_reg_dst, en_src => en_gen_reg_src, src => src(7 downto 0), dst => dst(7 downto 0), bus_A => bus_A, bus_B => bus_B);
 
 	-- instruction register
-	IR : entity work.nbitRegister 	generic map(n => 16)
-									port map(input => bus_B, output => bus_A, en => dst(10), rst => rst_all OR rst(3), clk => clk);
+	IR	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => bus_B, output => reg_to_tristate(reg_size-1 downto 0), en => dst(8), rst => rst_all OR rst(1), clk => clk);
+	-- program counter register
+	PC	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => bus_B, output => reg_to_tristate(2*reg_size-1 downto reg_size), en => dst(9), rst => rst_all OR rst(2), clk => clk);
+	-- temp register
+	temp	: entity work.nbitRegister 	generic map(n => 16)
+										port map(input => bus_B, output => reg_to_tristate(3*reg_size-1 downto 2*reg_size), en => dst(10), rst => rst_all OR rst(3), clk => clk);
+	-- MDR input data selection by mux 2 x 1
+	MDR_mux	: entity work.nbitMux	generic map	(SEL_LINES => 1, DATA_WIDTH => reg_size)
+									port map	(sel => mem_read, input => mem_data_out&bus_B, output => mux_to_mdr);
+	-- memory data register
+	MDR	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => mux_to_mdr, output => reg_to_tristate(4*reg_size-1 downto 3*reg_size), en => dst(11) OR mem_read(0), rst => rst_all OR rst(4), clk => clk);
 
+	-- memory address register
+	MAR	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => bus_B, output => mem_address, en => dst(12), rst => rst_all OR rst(5), clk => clk);
+
+	add_tri:  FOR i IN  0 TO  4 GENERATE
+	-- tri_state_buffer of each special register
+	tri_st_buffer : entity work.nbitTristate GENERIC MAP(n => reg_size) 
+					PORT MAP (en=>src(i), input=>reg_to_tristate((i+1)*reg_size -1 DOWNTO i*reg_size), output=>bus_A);
+	END GENERATE;
+
+	-- Ram 
+	
+	
+									
 END ARCHITECTURE arch;
