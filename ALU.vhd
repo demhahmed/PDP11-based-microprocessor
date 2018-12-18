@@ -7,7 +7,7 @@ ENTITY ALU IS
 		A,B : IN std_logic_vector(reg_size-1 DOWNTO 0);
 		Cin : IN std_logic;
 		Sel : IN std_logic_vector(3 DOWNTO 0);
-		Cout : OUT std_logic;
+		Cout,Zout,Vout,Nout : OUT std_logic;
 		F : OUT std_logic_vector(reg_size-1 DOWNTO 0));
 END ENTITY ALU;
 
@@ -66,18 +66,39 @@ ARCHITECTURE structural_behavioural OF ALU IS
         Case Sel(3 DOWNTO 2) IS
           WHEN "00" =>
             F <= F1;
-            Cout <= C1;
+   	    if F1 = "0000000000000000" then Zout <= '1';
+	    else Zout <= '0';
+	    end if;
+            Vout <= (((not(A(reg_size-1))and not(B(reg_size-1)) and F1(reg_size-1)) or (A(reg_size-1)and B(reg_size-1) and not(F1(reg_size-1)))) and not(sel(1)) and sel(0))
+			or (((not(A(reg_size-1))and B(reg_size-1)) or (A(reg_size-1)and not(B(reg_size-1)))) and sel(1) and not(sel(0)));
+	    Cout <= C1;
+	    Nout <= F1(reg_size-1);
           WHEN "01" =>
             F <= F2;
+	    if F2 = "0000000000000000" then Zout <= '1';
+	    else Zout <= '0';
+	    end if;
+	    Nout <= F2(reg_size-1);
           WHEN "10" =>
             F <= F3;
+            if F3 = "0000000000000000" then Zout <= '1';
+	    else Zout <= '0';
+	    end if;
             Cout <= C3;
+            Nout <= F3(reg_size-1);
           WHEN "11" =>
             F <= F4;
-            Cout <= C4;
+	    if F4 = "0000000000000000" then Zout <= '1';
+	    else Zout <= '0';
+	    end if;
+	    Cout <= C4;
+            Nout <= F4(reg_size-1);
           WHEN OTHERS =>
             F <= x"0000";
             Cout <= '0';
+	    Zout <= '0';
+	    Vout <= '0';
+	    Nout <= '0';
         END CASE;
     END PROCESS;
     
