@@ -12,9 +12,12 @@ ENTITY ram IS
 	PORT(
 		clk : IN std_logic;
 		we  : IN std_logic;
+		re	: IN std_logic;
 		address : IN  std_logic_vector(ram_address_size-1 DOWNTO 0);
 		datain  : IN  std_logic_vector(bus_width-1 DOWNTO 0);
-		dataout : OUT std_logic_vector(bus_width-1 DOWNTO 0));
+		dataout : OUT std_logic_vector(bus_width-1 DOWNTO 0);
+		MFC		: OUT std_logic		-- to indicate that ram has finished its job
+	);
 END ENTITY ram;
 
 ARCHITECTURE syncrama OF ram IS
@@ -27,7 +30,12 @@ ARCHITECTURE syncrama OF ram IS
 			BEGIN
 				IF falling_edge(clk) and we = '1' THEN  
 					ram(to_integer(unsigned(address))) <= datain;
+					MFC <= '1';
+				ELSIF falling_edge(clk) and re = '1' THEN
+					dataout <= ram(to_integer(unsigned(address)));
+					MFC <= '1';
+				ELSE
+					MFC	<= '0';
 				END IF;
 		END PROCESS;
-		dataout <= ram(to_integer(unsigned(address)));
 END syncrama;

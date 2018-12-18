@@ -7,6 +7,7 @@ entity controlWordGenerator is
 		rst, clk	: 	IN	std_logic;
 		flags		:	IN	std_logic_vector(3 downto 0);
 		new_address	:	IN	std_logic_vector(15 downto 0);
+		run			:	IN	std_logic;		-- signal to indicate whether the mPC should stop or continue counting to next instruction
 		control_word:	OUT	std_logic_vector(0 downto 0)	-- TODO: ahmed input
 	) ;
 end controlWordGenerator;
@@ -34,7 +35,7 @@ begin
 							
 	-- micro program counter register
 	mPC	: entity work.nbitRegister 	generic map(n => 16)
-									port map(input => mPC_in, output => mPC_out, en => '1', rst => rst, clk => clk);
+									port map(input => mPC_in, output => mPC_out, en => run, rst => rst, clk => clk);
 	-- Rom of Control word
 	Rom : entity work.rom	generic map (rom_size => rom_size, cw_width => cw_size,rom_address_size =>rom_address_size)
 							port 	map(clk =>clk, address =>mPC_out, control_word =>control_word);

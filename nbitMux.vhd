@@ -15,6 +15,7 @@ ENTITY nbitMux is
         input   : IN    std_logic_vector((2**SEL_LINES * DATA_WIDTH)-1 DOWNTO 0);
         output  : OUT   std_logic_vector(DATA_WIDTH-1 DOWNTO 0)
     );
+    
 END ENTITy nbitMux;
 
 architecture behavioural of nbitMux is

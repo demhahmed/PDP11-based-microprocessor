@@ -34,7 +34,8 @@ signal mem_data_out		:	std_logic_vector(15 downto 0);
 signal rom_address		:	std_logic_vector(15 downto 0);
 signal mux_to_mdr		:	std_logic_vector(15 downto 0);
 
-signal mem_read			:	std_logic_vector(0 downto 0);
+signal mem_read_c		:	std_logic_vector(0 downto 0);	-- control signal of memory read coming from control bus (cw)
+signal mem_write_c		:	std_logic_vector(0 downto 0);	-- control signal of memory write coming from control bus (cw)
 
 --              FLAG    -- NZVC
 signal alu_flags	:	std_logic_vector(3 downto 0);
@@ -72,10 +73,10 @@ BEGIN
 										port map(input => bus_B, output => reg_to_tristate(3*reg_size-1 downto 2*reg_size), en => dst(10), rst => rst_all OR rst(3), clk => clk);
 	-- MDR input data selection by mux 2 x 1
 	MDR_mux	: entity work.nbitMux	generic map	(SEL_LINES => 1, DATA_WIDTH => reg_size)
-									port map	(sel => mem_read, input => mem_data_out&bus_B, output => mux_to_mdr);
+									port map	(sel => mem_read_c, input => mem_data_out&bus_B, output => mux_to_mdr);
 	-- memory data register
 	MDR	: entity work.nbitRegister 	generic map(n => 16)
-									port map(input => mux_to_mdr, output => reg_to_tristate(4*reg_size-1 downto 3*reg_size), en => dst(11) OR mem_read(0), rst => rst_all OR rst(4), clk => clk);
+									port map(input => mux_to_mdr, output => reg_to_tristate(4*reg_size-1 downto 3*reg_size), en => dst(11) OR mem_read_c(0), rst => rst_all OR rst(4), clk => clk);
 
 	-- memory address register
 	MAR	: entity work.nbitRegister 	generic map(n => 16)
@@ -87,6 +88,8 @@ BEGIN
 					PORT MAP (en=>src(i+8), input=>reg_to_tristate((i+1)*reg_size -1 DOWNTO i*reg_size), output=>bus_A);
 	END GENERATE;
 
+	-- ram 
+	-- ram	: entity work.ram
 	
 									
 END ARCHITECTURE arch;
