@@ -19,8 +19,7 @@ CONSTANT REGS_COUNT	:	integer	:=	8;
 SIGNAL yout 			: 	std_logic_vector(reg_size-1 DOWNTO 0);
 SIGNAL y_en				:	std_logic;
 SIGNAL y_clear			:	std_logic;
-SIGNAL alu_Cin			:	std_logic;
-SIGNAL alu_Cout			:	std_logic;
+--SIGNAL alu_Cout			:	std_logic;
 SIGNAL alu_operation	:	std_logic_vector(3 downto 0);
 SIGNAL dst				:	std_logic_vector(13 downto 0);
 SIGNAL src				:	std_logic_vector(13 downto 0);
@@ -37,13 +36,25 @@ signal mux_to_mdr		:	std_logic_vector(15 downto 0);
 
 signal mem_read			:	std_logic_vector(0 downto 0);
 
+--              FLAG    -- NZVC
+signal alu_flags	:	std_logic_vector(3 downto 0);
+SIGNAL alu_Cin			:	std_logic;
+SIGNAL alu_Cout			:	std_logic;
+SIGNAL f_en			:	std_logic;
+SIGNAL f_clear			:	std_logic;
+signal alu_Zout			:	std_logic;	
+signal alu_Vout			:	std_logic;	
+signal alu_Nout			:	std_logic;	
 
 BEGIN
-
+		-- flag register   -- NZVC
+	flag_reg 	: 	entity work.nbitRegister generic map(n => 4)
+								port map(input => alu_Nout&alu_Zout&alu_Vout&alu_Cout, output => alu_flags, en => f_en, clk => clk, rst => f_clear);
+		
 	y 	: 	entity work.nbitRegister generic map(n => 16)
 								port map(input => bus_A, output => yout, en => y_en, clk => clk, rst => y_clear);
 	alu_module: entity work.ALU generic map(reg_size => 16) 
-								port map( A => yout, B => bus_A, Cin => alu_Cin, sel => alu_operation,Cout => alu_Cout,F => bus_B);
+								port map( A => yout, B => bus_A, Cin => alu_flags(0), sel => alu_operation,Cout => alu_Cout,F => bus_B , Zout => alu_Zout, Vout => alu_Vout, Nout => alu_Nout);
 	
 	-- general puspose registers
 
