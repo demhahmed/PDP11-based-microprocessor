@@ -22,12 +22,14 @@ SIGNAL y_clear			:	std_logic;
 SIGNAL alu_Cin			:	std_logic;
 SIGNAL alu_Cout			:	std_logic;
 SIGNAL alu_operation	:	std_logic_vector(3 downto 0);
-SIGNAL dst				:	std_logic_vector(10 downto 0);
-SIGNAL src				:	std_logic_vector(10 downto 0);
-SIGNAL rst				:	std_logic_vector(3 downto 0);		-- rst(0) indicates general purpose registers reset
+SIGNAL dst				:	std_logic_vector(11 downto 0);
+SIGNAL src				:	std_logic_vector(11 downto 0);
+SIGNAL rst				:	std_logic_vector(4 downto 0);		-- rst(0) indicates general purpose registers reset
 signal en_gen_reg_dst	:	std_logic;
 signal en_gen_reg_src	:	std_logic;
 
+
+signal temp				: std_logic_vector(16*4-1 downto 0);
 
 BEGIN
 
@@ -42,7 +44,17 @@ BEGIN
 																port map(clk => clk, rst => rst(0) or rst_all, en_dst => en_gen_reg_dst, en_src => en_gen_reg_src, src => src(7 downto 0), dst => dst(7 downto 0), bus_A => bus_A, bus_B => bus_B);
 
 	-- instruction register
-	IR : entity work.nbitRegister 	generic map(n => 16)
-									port map(input => bus_B, output => bus_A, en => dst(10), rst => rst_all OR rst(3), clk => clk);
+	IR	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => bus_B, output => temp(reg_size-1 downto 0), en => dst(10), rst => rst_all OR rst(3), clk => clk);
+	-- program counter register
+	PC	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => bus_B, output => temp(2*reg_size-1 downto reg_size), en => dst(11), rst => rst_all OR rst(4), clk => clk);
+	-- temp register
+	temp	: entity work.nbitRegister 	generic map(n => 16)
+										port map(input => bus_B, output => temp(3*reg_size-1 downto 2*reg_size), en => dst(11), rst => rst_all OR rst(4), clk => clk);
+	-- memory address register
+	MAR	: entity work.nbitRegister 	generic map(n => 16)
+									port map(input => bus_B, output => temp(3*reg_size-1 downto 2*reg_size), en => dst(11), rst => rst_all OR rst(4), clk => clk);
 
+									
 END ARCHITECTURE arch;
