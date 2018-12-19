@@ -6,7 +6,7 @@ entity controlWordGenerator is
 	port (
 		rst, clk	: 	IN	std_logic;
 		flags		:	IN	std_logic_vector(3 downto 0);
-		IR_reg 		: 	IN std_logic_vector(11 downto 0);
+		IR_reg 		: 	IN std_logic_vector(15 downto 0);
 		run			:	IN	std_logic;		-- signal to indicate whether the mPC should stop or continue counting to next instruction
 		state		:	IN	std_logic_vector(1 downto 0);
 		control_word:	OUT	std_logic_vector(33 downto 0);	

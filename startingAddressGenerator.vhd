@@ -28,7 +28,7 @@ begin
 	-- bitORing mechanism
 	bitORing	:	entity work.addressBitORing port map(state => state, IR => IR_reg, address => new_address);
 	-- micro program counter incrementer
-	mPC_incrementer	:	entity work.nbitIncrementer generic map(addressn => 12)
+	mPC_incrementer	:	entity work.nbitIncrementer generic map(n => 12)
 									port map(input => mPC, output => inc_out);
 	branch_true(0) <= 	branch OR (branch_z AND (NOT branch_c) and zero_flag) OR (branch_c AND (NOT branch_z) and carry_flag) OR (branch_z and branch_c and zero_flag and carry_flag);	
     -- micro pc address selector 								
