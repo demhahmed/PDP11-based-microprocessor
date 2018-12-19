@@ -6,8 +6,8 @@ entity startingAddressGenerator is
 	port (
 		zero_flag	:	IN	std_logic;
 		carry_flag	:	IN	std_logic;
-        	IR_reg      :   IN  std_logic_vector(15 downto 0);
-  		mPC         :   IN  std_logic_vector(11 downto 0);
+        IR_reg      :   IN  std_logic_vector(15 downto 0);
+        mPC         :   IN  std_logic_vector(11 downto 0);
 		branch_z	:	IN	std_logic;
 		branch_c	:	IN	std_logic;
 		branch		:	IN	std_logic;

@@ -7,21 +7,21 @@ END controlWordGeneratorTest;
 
 ARCHITECTURE testbench OF controlWordGeneratorTest IS
 		
-	signal clock,rst		: std_logic := '1';
-	signal flags			: std_logic_vector(3 downto 0);	
-    signal IR_reg           : std_logic_vector(11 downto 0);
-    signal mpc              : std_logic_vector(11 downto 0);
-    signal run              : std_logic;
-    signal control_word     : std_logic_vector(33 downto 0)	;
-
+	signal clock,rst	: std_logic := '1';
+	signal flags		: std_logic_vector(3 downto 0) := (others =>'0');	
+	signal IR_reg           : std_logic_vector(15 downto 0) := (others =>'0');
+	signal run              : std_logic := '0';
+	signal state            : std_logic_vector (1 downto 0) := (others =>'0');
+	signal control_word     : std_logic_vector(33 downto 0)	:= (others =>'0');
+	signal mpc		: std_logic_vector(11 downto 0) := (others =>'0');
 	
 	BEGIN
-	con_w_gen		:entity work.controlWordGenerator PORT MAP (rst,clock,flags,IR_reg,run,control_word,mpc);
+	con_w_gen		:entity work.controlWordGenerator PORT MAP (rst => rst,clk => clock,flags => flags,IR_reg => IR_reg,run => run,state => state,control_word => control_word,temp_mpc => mpc);
 	PROCESS
             BEGIN
                 run <= '1';
-				wait for 1 ns;
-				assert (control_word = X"0000000000") REPORT "error in reading data at index 0" severity error;
+		wait for 1 ns;
+		assert (control_word = X"0000000000") REPORT "error in reading data at index 0" severity error;
                 flags <= "0100";
                 rst <= '0';
                 wait for 1 ns;
