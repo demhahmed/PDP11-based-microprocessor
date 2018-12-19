@@ -3,13 +3,13 @@ USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.numeric_std.all;
 
 entity ramRequestsGenerator is
-  port (
-    clk     			:   IN  std_logic;
-    read_c, write_c 	:	IN	std_logic;  -- control signals of read and write
-	MFC, WMFC			:	IN	std_logic;
-	mem_read, mem_write :	OUT	std_logic;
-	run					:	OUT	std_logic
-  ) ;
+	port (
+		clk     			:   IN  std_logic;
+		read_c, write_c 	:	IN	std_logic;  -- control signals of read and write
+		MFC, WMFC			:	IN	std_logic;
+		mem_read, mem_write :	OUT	std_logic;
+		run					:	OUT	std_logic
+) ;
 end ramRequestsGenerator ;
 
 architecture arch of ramRequestsGenerator is

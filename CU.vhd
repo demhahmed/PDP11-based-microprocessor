@@ -19,7 +19,6 @@ CONSTANT REGS_COUNT	:	integer	:=	8;
 SIGNAL yout 			: 	std_logic_vector(reg_size-1 DOWNTO 0);
 SIGNAL y_en				:	std_logic;
 SIGNAL y_clear			:	std_logic;
---SIGNAL alu_Cout			:	std_logic;
 SIGNAL alu_operation	:	std_logic_vector(3 downto 0);
 SIGNAL dst				:	std_logic_vector(13 downto 0);
 SIGNAL src				:	std_logic_vector(13 downto 0);
@@ -36,16 +35,25 @@ signal mux_to_mdr		:	std_logic_vector(15 downto 0);
 
 signal mem_read_c		:	std_logic_vector(0 downto 0);	-- control signal of memory read coming from control bus (cw)
 signal mem_write_c		:	std_logic_vector(0 downto 0);	-- control signal of memory write coming from control bus (cw)
-
+signal mem_read			:	std_logic;
+signal mem_write		:	std_logic;
+signal wmfc_c			:	std_logic;
+signal mfc				:	std_logic;
+signal run				:	std_logic;
 --              FLAG    -- NZVC
 signal alu_flags	:	std_logic_vector(3 downto 0);
 SIGNAL alu_Cin			:	std_logic;
 SIGNAL alu_Cout			:	std_logic;
-SIGNAL f_en			:	std_logic;
+SIGNAL f_en				:	std_logic;
 SIGNAL f_clear			:	std_logic;
 signal alu_Zout			:	std_logic;	
 signal alu_Vout			:	std_logic;	
-signal alu_Nout			:	std_logic;	
+signal alu_Nout			:	std_logic;
+
+signal state_inc_out	:	std_logic_vector(2 downto 0);									
+signal state_inc_in		:	std_logic_vector(2 downto 0);		
+signal state_rst		:	std_logic;							
+signal state_clk		:	std_logic;				
 
 BEGIN
 		-- flag register   -- NZVC
@@ -88,8 +96,17 @@ BEGIN
 					PORT MAP (en=>src(i+8), input=>reg_to_tristate((i+1)*reg_size -1 DOWNTO i*reg_size), output=>bus_A);
 	END GENERATE;
 
+	-- ram requests generator
+	req_gen	:	entity work.ramRequestsGenerator port map(clk => clk, read_c => mem_read_c(0), write_c => mem_write_c(0), WMFC => wmfc_c, MFC => mfc, run => run);
+
 	-- ram 
-	-- ram	: entity work.ram
+	ram	: entity work.ram	generic map (ram_size	=> 2000, bus_width => 16, ram_address_size => 11)
+							port map	(clk => clk, we => mem_write, re => mem_read, address => mem_address, datain => reg_to_tristate(4*reg_size-1 downto 3*reg_size), dataout => mem_data_out, mfc => mfc);
 	
-									
+	-- state register
+	state	:	entity work.nbitRegister	generic map(n => 2)
+											port map(input => state_inc_out, output => state_inc_in, en => '1', rst => state_rst, clk => state_clk);
+	-- incrementer for the state register
+	state_inc	:	entity work.nbitIncrementer generic map(n => 2) port map(input => state_inc_in, output => state_inc_out);
+	
 END ARCHITECTURE arch;

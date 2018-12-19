@@ -30,9 +30,9 @@ ARCHITECTURE behavioural OF generalRegisters IS
 		loop1:  FOR i IN  0 TO  REGS_COUNT-1 GENERATE
 		-- tri_state_buffer of i's register
 		tri_st_buffer : entity work.nbitTristate GENERIC MAP(n => BUS_WIDTH) 
-						PORT MAP (en=>src(i), input=>temp((i+1)*BUS_WIDTH -1 DOWNTO i*BUS_WIDTH), output=>bus_A);
+						PORT MAP (en=>src(i) and en_src, input=>temp((i+1)*BUS_WIDTH -1 DOWNTO i*BUS_WIDTH), output=>bus_A);
 		reg           : entity work.nbitRegister GENERIC MAP(n => BUS_WIDTH) 
-						PORT MAP (clk=>clk, rst=>rst, en=>dst(i), input=>bus_B, output=>temp((i+1)*BUS_WIDTH -1 DOWNTO i*BUS_WIDTH));
+						PORT MAP (clk=>clk, rst=>rst, en=>dst(i) and en_dst, input=>bus_B, output=>temp((i+1)*BUS_WIDTH -1 DOWNTO i*BUS_WIDTH));
 		END GENERATE;
 
             

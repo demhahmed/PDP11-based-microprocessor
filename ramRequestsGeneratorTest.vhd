@@ -20,6 +20,7 @@ ARCHITECTURE testbench OF ramRequestsGeneratorTest IS
 			BEGIN
 
 				rd <= '1';
+				wmfc <= '1';
 				wait for 1 ns;
 				rd <= '0';
 				wait for 0.5 ns;
@@ -28,7 +29,6 @@ ARCHITECTURE testbench OF ramRequestsGeneratorTest IS
 
 				wait for 0.5 ns;
 
-				wmfc <= '1';
 				wait for 0.5 ns;
 				assert (mr = '1' and run = '0')
 					report "error in 2nd cycle" severity error;
