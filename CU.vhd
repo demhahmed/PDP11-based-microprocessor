@@ -27,7 +27,7 @@ signal en_gen_reg_dst	:	std_logic;
 signal en_gen_reg_src	:	std_logic;
 
 
-signal reg_to_tristate	: 	std_logic_vector(reg_size*5-1 downto 0);
+signal reg_to_tristate	: 	std_logic_vector(reg_size*2-1 downto 0);
 signal mem_address		:	std_logic_vector(15 downto 0);
 signal mem_data_out		:	std_logic_vector(15 downto 0);
 signal rom_address		:	std_logic_vector(15 downto 0);
@@ -59,15 +59,20 @@ signal state_clk		:	std_logic;
 signal control_word		:	std_logic_vector(33 downto 0);
 signal IR_reg			:	std_logic_vector(15 downto 0);
 
+signal mPC_rst			:	std_logic;
+
+signal alu_flag_force	:	std_logic_vector(0 downto 0);
+
+
 BEGIN
 
 	dst(12 downto 8) <= control_word(10)&control_word(12) &control_word(14)&control_word(16)&control_word(18);
 	src(12 downto 8) <= control_word(11)&control_word(13)&control_word(15)&control_word(17)&control_word(19);
 
--- Note reg_to_tristate(reg_size-1 downto 0) refer to =>output of IR register 
--- Decoder to enable Src_register according to IR register 
-	reg_src_en : entity work.decoder generic map (n =>3) port map (input =>reg_to_tristate(reg_size-1 downto 0)(11 downto 9),output => src_reg,en =>'1');
--- Decoder to enable Des_register according to IR register 
+	-- Note reg_to_tristate(reg_size-1 downto 0) refer to =>output of IR register 
+	-- Decoder to enable Src_register according to IR register 
+	reg_src_en : entity work.decoder generic map (n =>3) port map (input => reg_to_tristate(reg_size-1 downto 0)(11 downto 9),output => src_reg,en =>'1');
+	-- Decoder to enable Des_register according to IR register 
 	reg_des_en : entity work.decoder generic map (n =>3) port map (input =>reg_to_tristate(reg_size-1 downto 0)(5 downto 3),output => dst_reg, en =>'1');
 		-- flag register   -- NZVC
 	flag_reg 	: 	entity work.nbitRegister generic map(n => 4)
@@ -75,8 +80,10 @@ BEGIN
 		
 	y 	: 	entity work.nbitRegister generic map(n => 16)
 								port map(input => bus_A, output => yout, en => y_en, clk => clk, rst => y_clear);
+	alu_flag_force(0)	<=	control_word(28);
+	alu_flag_mux	:	entity work.nbitMux generic map(SEL_LINES=>1, DATA_WIDTH=>1) port map(sel=>alu_flag_force, input=>control_word(29)&alu_flags(0), output=>alu_Cin);
 	alu_module: entity work.ALU generic map(reg_size => 16) 
-								port map( A => yout, B => bus_A, Cin => alu_flags(0), sel => alu_operation,Cout => alu_Cout,F => bus_B , Zout => alu_Zout, Vout => alu_Vout, Nout => alu_Nout);
+								port map( A => yout, B => bus_A, Cin => alu_Cin, sel => alu_operation,Cout => alu_Cout,F => bus_B , Zout => alu_Zout, Vout => alu_Vout, Nout => alu_Nout);
 	
 	-- general puspose registers
 
@@ -118,4 +125,7 @@ BEGIN
 	-- incrementer for the state register
 	state_inc	:	entity work.nbitIncrementer generic map(n => 2) port map(input => state_inc_in, output => state_inc_out);
 	
+	-- control word generator (mPC and rom with associated circuits)
+	cw_generator	:	entity work.controlWordGenerator port map(rst=>mPC_rst, clk=>clk, flags=>alu_flags, flags_c=>control_word(4)&control_word(2), IR_reg=>IR_reg, run=>run, state=>state_inc_in, control_word=>control_word);
+
 END ARCHITECTURE arch;

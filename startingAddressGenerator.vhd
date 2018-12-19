@@ -6,6 +6,8 @@ entity startingAddressGenerator is
 	port (
 		zero_flag	:	IN	std_logic;
 		carry_flag	:	IN	std_logic;
+		zero_flag_c	:	IN	std_logic;
+		carry_flag_c:	IN	std_logic;
         IR_reg      :   IN  std_logic_vector(15 downto 0);
         mPC         :   IN  std_logic_vector(11 downto 0);
 		branch_z	:	IN	std_logic;
@@ -30,7 +32,7 @@ begin
 	-- micro program counter incrementer
 	mPC_incrementer	:	entity work.nbitIncrementer generic map(n => 12)
 									port map(input => mPC, output => inc_out);
-	branch_true(0) <= 	branch OR (branch_z AND (NOT branch_c) and zero_flag) OR (branch_c AND (NOT branch_z) and carry_flag) OR (branch_z and branch_c and zero_flag and carry_flag);	
+	branch_true(0) <= 	branch OR (branch_z AND (NOT branch_c) and (zero_flag xnor zero_flag_c)) OR (branch_c AND (NOT branch_z) and (carry_flag xnor carry_flag_c)) OR (branch_z and branch_c and (zero_flag xnor zero_flag_c) and (carry_flag xnor carry_flag_c));	
     -- micro pc address selector 								
 	mPC_mux	: entity work.nbitMux	generic map	(SEL_LINES => 1, DATA_WIDTH => 12)
                                     port map	(sel => branch_true, input => new_address&inc_out, output => new_mPC);
