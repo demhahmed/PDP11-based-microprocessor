@@ -16,7 +16,7 @@ ARCHITECTURE testbench OF controlWordGeneratorTest IS
 	signal mpc		: std_logic_vector(11 downto 0) := (others =>'0');
 	
 	BEGIN
-	con_w_gen		:entity work.controlWordGenerator PORT MAP (rst => rst,clk => clock,flags => flags,IR_reg => IR_reg,run => run,state => state,control_word => control_word,temp_mpc => mpc);
+	con_w_gen		:entity work.controlWordGenerator PORT MAP (rst => rst,clk => clock,flags => flags,IR_reg => IR_reg,run =>  run,state => state,control_word => control_word,temp_mpc => mpc);
 	PROCESS
             BEGIN
                 run <= '1';
