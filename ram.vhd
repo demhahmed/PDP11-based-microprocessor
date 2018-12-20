@@ -4,9 +4,9 @@ USE IEEE.numeric_std.all;
 
 ENTITY ram IS
 	generic( 
-		ram_size: integer:=64;
+		ram_size: integer:=65536;
 		bus_width: integer:=16; 
-	   	ram_address_size: integer:=6
+	   	ram_address_size: integer:=16
 	);
 	
 	PORT(

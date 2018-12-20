@@ -14,14 +14,14 @@ entity startingAddressGenerator is
 		branch_c	:	IN	std_logic;
 		branch		:	IN	std_logic;
 		state		:	IN	std_logic_vector(1 downto 0);
-		new_mPC     :	OUT	std_logic_vector(11 downto 0)
+		new_mPC     :	OUT	std_logic_vector(11 downto 0);
+		branch_true	:	OUT	std_logic_vector(0 downto 0)
 	);
 end startingAddressGenerator;
 
 architecture arch of startingAddressGenerator is
 
 	signal inc_out : std_logic_vector(11 downto 0);
-    signal branch_true : std_logic_vector (0 downto 0);
     signal new_address  :   std_logic_vector(11 downto 0);  
 
 
