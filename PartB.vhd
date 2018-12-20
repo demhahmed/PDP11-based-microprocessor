@@ -13,7 +13,7 @@ ARCHITECTURE basic OF PartB IS
   BEGIN
     F <= A AND B WHEN Sel = "00"
     ELSE A OR B WHEN  Sel = "01"
-    ELSE A XOR B WHEN Sel = "10"
+    ELSE A XNOR B WHEN Sel = "10"
     ELSE NOT A;
 END ARCHITECTURE basic;
   
