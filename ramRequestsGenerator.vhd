@@ -19,7 +19,7 @@ architecture arch of ramRequestsGenerator is
 begin
 
 	ff	:	entity work.nbitJKFlipFlop	generic map(n => 2)
-										port map(clk => clk, j => read_c&write_c, k => MFC&MFC, q => ff_out );
+										port map(clk => clk, j => read_c&write_c, k => MFC&MFC, q => ff_out);
 	run <= not (WMFC and (mem_read OR mem_write) and (not MFC));
 	mem_write <= ff_out(0);
 	mem_read <= ff_out(1);

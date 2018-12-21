@@ -15,8 +15,8 @@ end decoder;
 architecture a of decoder is
 begin
 
-	output <= (others => '0') when en = '0'
-	else (to_integer(unsigned(input))=>'1', others => '0');
+	output <= (to_integer(unsigned(input))=>'1', others => '0') when en = '1'
+	else  (others => '0') ;
 
 end architecture;
 

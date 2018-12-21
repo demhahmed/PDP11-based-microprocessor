@@ -11,8 +11,6 @@ ENTITY generalRegisters IS
 	(
 		clk			: IN    std_logic;
 		rst			: IN    std_logic;
-		-- en_dst		: IN    std_logic;
-		-- en_src		: IN    std_logic;
 		src, dst	: IN    std_logic_vector(REGS_COUNT-1 DOWNTO 0);
 		bus_A		: OUT 	std_logic_vector(BUS_WIDTH-1 DOWNTO 0);
 		bus_B		: IN 	std_logic_vector(BUS_WIDTH-1 DOWNTO 0)

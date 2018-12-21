@@ -21,7 +21,6 @@ architecture arch of addressBitORing is
     signal address_sel  :   std_logic_vector(0 downto 0);
     signal reg_direct   :   std_logic;
     signal branch_condition_true   :   std_logic;
-
 begin
 
     inst_decoder    :   entity work.inst_decoder port map(ir => IR, op_type => op_type, inst_type => op_id);
@@ -29,10 +28,11 @@ begin
     base_mux    :   entity work.nbitMux generic map(SEL_LINES => 2, DATA_WIDTH => 12)
                                         port map(sel => sel, input => "011000000000" & "010000000000" & "001000000000" & "000000000000", output => base_address);
     or_mux      :   entity work.nbitMux generic map(SEL_LINES => 2, DATA_WIDTH => 12)
-                                        port map(sel => sel, input => ("000"&op_type&op_id&branch_condition_true&"00")&("000000"&address_mode&reg_direct&"00")&("000000"&address_mode&reg_direct&"00")&"000000000000", output => to_be_ORd);
+                                        port map(sel => sel, input => ("000"&op_type&op_id&(branch_condition_true OR reg_direct)&"00")&("000000"&address_mode&"000")&("000000"&address_mode&"000")&"000000000000", output => to_be_ORd);
     address_mux :   entity work.nbitMux generic map(SEL_LINES => 1, DATA_WIDTH => 3)
-                                        port map(sel => address_sel, input => IR(11 downto 9) & IR(5 downto 3), output => address_mode);
-    reg_direct <=   '1' when not (address_mode(0) and address_mode(1) and address_mode(2))
+                                        port map(sel => address_sel, input =>  IR(5 downto 3)&IR(11 downto 9), output => address_mode);
+    
+    reg_direct <=   '1' when (not (IR(3) or IR(4) or IR(5))) and (op_type(0) xor op_type(1))
             else    '0';
     branch_condition_true <= '1' when state = "10" and op_type = "11"
                         else '0';
